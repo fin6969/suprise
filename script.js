@@ -208,8 +208,9 @@
     const from = bgm.volume;
     const t0 = performance.now();
     const step = (now) => {
-      const p = Math.min(1, (now - t0) / ms);
-      bgm.volume = from + (target - from) * p;
+      // rAF timestamps can be a hair earlier than t0, so clamp p to 0..1 (volume must stay in 0..1)
+      const p = Math.max(0, Math.min(1, (now - t0) / ms));
+      bgm.volume = Math.max(0, Math.min(1, from + (target - from) * p));
       if (p < 1) fadeTimer = requestAnimationFrame(step);
     };
     fadeTimer = requestAnimationFrame(step);
