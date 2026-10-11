@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f6b52" />
+  <title>A surprise for you</title>
 
+  <!-- Google Fonts
+       Rozha One ........ "Enter Code" title (bold flared serif)
+       Playfair Display .. hint text
+       Poppins ........... keypad + buttons
+       Gaegu ............. handwriting (envelope, mail, letter)
+       Sue Ellen Francisco  thin handwriting for "hey, baby eol!" -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Playfair+Display:ital,wght@0,500;1,500&family=Poppins:wght@600;700&family=Gaegu:wght@300;400;700&family=Sue+Ellen+Francisco&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-screen="lock">
+
+  <!-- ============ Shared SVG bits (gradients + icons) ============ -->
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="gHeartFill" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#3fe0a9" />
+        <stop offset="1" stop-color="#1f78d1" />
+      </linearGradient>
+      <linearGradient id="gHeartDeep" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0d6b57" />
+        <stop offset="1" stop-color="#12407f" />
+      </linearGradient>
+      <linearGradient id="gStarBlue" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#58b8f2" />
+        <stop offset="1" stop-color="#1c5fb0" />
+      </linearGradient>
+      <linearGradient id="gStarGreen" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#7cf0c4" />
+        <stop offset="1" stop-color="#14906f" />
+      </linearGradient>
+
+      <symbol id="heart" viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+      </symbol>
+      <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+        <path transform="scale(0.03125 0.03448)" d="M16 29C14 27.4 0 18 0 9C0 4 3.8 0 8.5 0C11.8 0 14.6 1.8 16 4.6C17.4 1.8 20.2 0 23.5 0C28.2 0 32 4 32 9C32 18 18 27.4 16 29Z" />
+      </clipPath>
+      <symbol id="sparkle" viewBox="0 0 24 24">
+        <path d="M12 0C12.9 7 17 11.1 24 12C17 12.9 12.9 17 12 24C11.1 17 7 12.9 0 12C7 11.1 11.1 7 12 0Z" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Floating hearts live here (spawned by script.js) -->
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
+
+  <main id="app">
+
+    <!-- ===================================================== -->
+    <!-- 1) LOCK SCREEN                                         -->
+    <!-- ===================================================== -->
+    <section class="screen screen--lock is-active" id="screen-lock" data-screen="lock" aria-label="Enter the passcode">
+      <div class="stage lock">
+        <svg class="lock__love" style="--i:0" aria-hidden="true"><use href="#heart" fill="#fff" /></svg>
+        <h1 class="lock__title" style="--i:0">Enter Code</h1>
+
+        <div class="slots" id="slots" style="--i:1" aria-hidden="true">
+          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
+          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
+          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
+          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
+        </div>
+
+        <p class="lock__hint" id="hint" style="--i:2" aria-live="polite">Hint: MANT-SORRY</p>
+
+        <div class="pad-wrap" style="--i:3">
+          <div class="pad" id="pad" role="group" aria-label="Keypad">
+            <button class="key" type="button" data-key="1">1</button>
+            <button class="key" type="button" data-key="2">2</button>
+            <button class="key" type="button" data-key="3">3</button>
+            <button class="key" type="button" data-key="4">4</button>
+            <button class="key" type="button" data-key="5">5</button>
+            <button class="key" type="button" data-key="6">6</button>
+            <button class="key" type="button" data-key="7">7</button>
+            <button class="key" type="button" data-key="8">8</button>
+            <button class="key" type="button" data-key="9">9</button>
+            <button class="key key--remove" type="button" data-key="remove" aria-label="Remove last digit">REMOVE</button>
+            <button class="key" type="button" data-key="0">0</button>
+            <button class="key key--enter" type="button" data-key="enter" aria-label="Enter code">ENTER</button>
+          </div>
+
+          <!-- Shown instead of the keypad after a wrong code -->
+          <button class="retry" id="retry" type="button">WRONG PASSCODE, TRY AGAIN</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- 2) ENVELOPE ("you've got mail")                        -->
+    <!-- ===================================================== -->
+    <section class="screen screen--envelope" id="screen-envelope" data-screen="envelope" aria-label="You've got mail">
+      <div class="stage env">
+        <h2 class="env__greeting" style="--i:0">hey, baby eol! <svg class="inline-heart" aria-hidden="true"><use href="#heart" fill="url(#gHeartDeep)" /></svg></h2>
+
+        <button class="envelope" id="envelope" type="button" style="--i:1" aria-label="Open the envelope">
+          <span class="envelope__back"></span>
+          <span class="envelope__paper"></span>
+          <span class="envelope__front"></span>
+          <span class="envelope__flap"></span>
+          <svg class="envelope__heart"><use href="#heart" fill="url(#gHeartDeep)" /></svg>
+          <svg class="envelope__float envelope__float--1" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" /></svg>
+          <svg class="envelope__float envelope__float--2" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartDeep)" /></svg>
+          <svg class="envelope__float envelope__float--3" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" /></svg>
+        </button>
+
+        <p class="env__sub" style="--i:2">you've got mail ;)</p>
+        <p class="env__tap" style="--i:3">tap the envelope</p>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- 3) THE EMAIL CARD                                      -->
+    <!-- ===================================================== -->
+    <section class="screen screen--mail" id="screen-mail" data-screen="mail" aria-label="Your email">
+      <div class="stage">
+        <article class="mail">
+          <div class="mail__hearts" aria-hidden="true">
+            <svg class="mh mh--1" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--2" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--3" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--4" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--5" viewBox="0 0 24 24"><use href="#sparkle" /></svg>
+            <svg class="mh mh--6" viewBox="0 0 24 24"><use href="#sparkle" /></svg>
+          </div>
+          <p class="mail__row" style="--i:0"><span class="mail__label">From:</span> <span class="mail__value">daddy fin</span></p>
+          <p class="mail__row" style="--i:1"><span class="mail__label">To:</span> <span class="mail__value">mommy eol</span></p>
+          <p class="mail__row mail__row--msg" style="--i:2"><span class="mail__label">Message:</span></p>
+          <p class="mail__msg" style="--i:3">Check out this awesome surprises for YOU!</p>
+          <button class="mail__attach" id="attach" type="button" style="--i:4">see attachment</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- 4) THE LETTER                                          -->
+    <!-- ===================================================== -->
+    <section class="screen screen--letter" id="screen-letter" data-screen="letter" aria-label="Your letter">
+      <div class="letter">
+        <div class="bunting" id="bunting" aria-hidden="true"></div>
+
+        <div class="letter__inner">
+
+          <!-- Heart photo sticker. Put your picture next to this file as "photo.jpg"
+               (or change the src below). If it is missing, the placeholder shows. -->
+          <figure class="sticker reveal" style="--i:0">
+            <div class="sticker__frame">
+              <div class="sticker__outline" style="clip-path:url(#heartClip)"></div>
+              <div class="sticker__photo" style="clip-path:url(#heartClip)">
+                <div class="sticker__ph" aria-hidden="true">
+                  <svg viewBox="0 0 100 100"><circle cx="50" cy="38" r="17" /><path d="M16 94c2-20 16-31 34-31s32 11 34 31z" /></svg>
+                  <span>PHOTO<br />HERE</span>
+                </div>
+                <img src="photo.jpg" alt="Our photo" onerror="this.style.display='none'" />
+              </div>
+            </div>
+
+            <!-- ribbon bow -->
+            <svg class="deco deco--bow" viewBox="0 0 100 64" aria-hidden="true">
+              <path d="M50 32C32 2 2 6 6 32C2 58 32 62 50 32Z" fill="url(#gHeartFill)" stroke="#fff" stroke-width="4" stroke-linejoin="round" />
+              <path d="M50 32C68 2 98 6 94 32C98 58 68 62 50 32Z" fill="url(#gHeartFill)" stroke="#fff" stroke-width="4" stroke-linejoin="round" />
+              <circle cx="50" cy="32" r="10" fill="#fff" />
+              <circle cx="50" cy="32" r="5" fill="url(#gHeartDeep)" />
+            </svg>
+
+            <svg class="deco deco--heart deco--h1" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h2" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gStarGreen)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h3" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gStarBlue)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h4" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h5" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gStarBlue)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--spark deco--s1" viewBox="0 0 24 24" aria-hidden="true"><use href="#sparkle" fill="#fff" /></svg>
+            <svg class="deco deco--spark deco--s2" viewBox="0 0 24 24" aria-hidden="true"><use href="#sparkle" fill="#fff" /></svg>
+            <svg class="deco deco--spark deco--s3" viewBox="0 0 24 24" aria-hidden="true"><use href="#sparkle" fill="#fff" /></svg>
+
+            <!-- ✏️ edit this little tag if you want -->
+            <figcaption class="sticker__tag">happy monthsary</figcaption>
+          </figure>
+
+          <!-- ============================================================
+               ✏️  EDIT YOUR LETTER HERE
+               Replace the text inside each <p> ... </p>.
+               Copy/paste a whole <p class="reveal" ...> line to add more paragraphs
+               (just give it the next --i number so it fades in after the others).
+               ============================================================ -->
+          <div class="letter__text">
+            <p class="reveal letter__greeting" style="--i:1">place text here so i can manually edit it.</p>
+            <p class="reveal" style="--i:2">place text here so i can manually edit it.</p>
+            <p class="reveal" style="--i:3">place text here so i can manually edit it.</p>
+            <p class="reveal" style="--i:4">place text here so i can manually edit it.</p>
+            <p class="reveal letter__sign" style="--i:5">place text here so i can manually edit it.</p>
+          </div>
+          <!-- ✏️  END OF EDIT AREA -->
+
+          <div class="hearts-row reveal" style="--i:6" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><use href="#heart" fill="#fff" /></svg>
+            <svg viewBox="0 0 24 24"><use href="#heart" fill="#fff" /></svg>
+            <svg viewBox="0 0 24 24"><use href="#heart" fill="#fff" /></svg>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Background music (put your file next to this one and name it bgm.mp3) -->
+  <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+
+  <!-- Sound on/off button (appears after unlocking) -->
+  <button class="sound" id="sound" type="button" aria-label="Toggle music">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path class="sound__body" d="M4 9v6h4l5 4V5L8 9H4z" />
+      <path class="sound__wave" d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="1.8" stroke-linecap="round" />
+      <path class="sound__mute" d="M16 9l5 6M21 9l-5 6" fill="none" stroke-width="1.8" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
