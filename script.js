@@ -12,7 +12,7 @@
     hint: "MANT-SORRY",        // shown under the hearts as "Hint: ..."
     musicVolume: 0.85,         // 0 – 1
     musicFadeMs: 2500,         // fade-in time after unlocking
-    toEnvelopeDelay: 1500,     // ms between "correct" and the envelope screen
+    toEnvelopeDelay: 1900,     // ms between "correct" and the envelope screen
     toMailDelay: 1500,         // ms between tapping the envelope and the mail screen
   };
 
@@ -80,7 +80,11 @@
   let busy = false; // true while showing wrong / correct state
 
   function renderSlots() {
-    slots.forEach((slot, i) => slot.classList.toggle("is-filled", i < entry.length));
+    slots.forEach((slot, i) => {
+      const filled = i < entry.length;
+      if (filled) $(".slot__digit", slot).textContent = entry[i];   // the digit stays visible
+      slot.classList.toggle("is-filled", filled);
+    });
   }
 
   function pressKey(key) {
@@ -256,7 +260,7 @@
   const floaters = $("#floaters");
 
   function spawnFloater() {
-    if (document.hidden || floaters.childElementCount > 46) return;
+    if (document.hidden || floaters.childElementCount > 34) return;
     const el = document.createElement("span");
     const spark = Math.random() < 0.22;
     el.className = "floater";
@@ -272,7 +276,7 @@
 
   if (!reduceMotion) {
     for (let i = 0; i < 10; i++) setTimeout(spawnFloater, i * 220);
-    setInterval(spawnFloater, 450);
+    setInterval(spawnFloater, 600);
   }
 
   // tiny hearts pop wherever you tap (cute!)

@@ -6,15 +6,12 @@
   <meta name="theme-color" content="#0f6b52" />
   <title>A surprise for you</title>
 
-  <!-- Google Fonts
-       Rozha One ........ "Enter Code" title (bold flared serif)
-       Playfair Display .. hint text
-       Poppins ........... keypad + buttons
-       Gaegu ............. handwriting (envelope, mail, letter)
-       Sue Ellen Francisco  thin handwriting for "hey, baby eol!" -->
+  <!-- Google Fonts (all bold, all sans-serif)
+       Fredoka ......... "Enter Code", hint, keypad, buttons (rounded bold)
+       Shantell Sans ... handwriting for envelope, mail card and letter (bold) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Playfair+Display:ital,wght@0,500;1,500&family=Poppins:wght@600;700&family=Gaegu:wght@300;400;700&family=Sue+Ellen+Francisco&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Shantell+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -30,6 +27,18 @@
       <linearGradient id="gHeartDeep" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stop-color="#0d6b57" />
         <stop offset="1" stop-color="#12407f" />
+      </linearGradient>
+      <linearGradient id="gHeartType" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#1fb88e" />
+        <stop offset="1" stop-color="#1b66c2" />
+      </linearGradient>
+      <linearGradient id="gHeartRed" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff6a7f" />
+        <stop offset="1" stop-color="#c81e48" />
+      </linearGradient>
+      <linearGradient id="gHeartGreen" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#3fdc86" />
+        <stop offset="1" stop-color="#0b8a4b" />
       </linearGradient>
       <linearGradient id="gStarBlue" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stop-color="#58b8f2" />
@@ -66,10 +75,10 @@
         <h1 class="lock__title" style="--i:0">Enter Code</h1>
 
         <div class="slots" id="slots" style="--i:1" aria-hidden="true">
-          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
-          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
-          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
-          <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartFill)" /></svg></span>
+                    <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartType)" /></svg><svg class="heart heart--wrong"><use href="#heart" fill="url(#gHeartRed)" /></svg><svg class="heart heart--right"><use href="#heart" fill="url(#gHeartGreen)" /></svg><span class="slot__digit"></span></span>
+                    <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartType)" /></svg><svg class="heart heart--wrong"><use href="#heart" fill="url(#gHeartRed)" /></svg><svg class="heart heart--right"><use href="#heart" fill="url(#gHeartGreen)" /></svg><span class="slot__digit"></span></span>
+                    <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartType)" /></svg><svg class="heart heart--wrong"><use href="#heart" fill="url(#gHeartRed)" /></svg><svg class="heart heart--right"><use href="#heart" fill="url(#gHeartGreen)" /></svg><span class="slot__digit"></span></span>
+                    <span class="slot"><svg class="heart heart--empty"><use href="#heart" /></svg><svg class="heart heart--full"><use href="#heart" fill="url(#gHeartType)" /></svg><svg class="heart heart--wrong"><use href="#heart" fill="url(#gHeartRed)" /></svg><svg class="heart heart--right"><use href="#heart" fill="url(#gHeartGreen)" /></svg><span class="slot__digit"></span></span>
         </div>
 
         <p class="lock__hint" id="hint" style="--i:2" aria-live="polite">Hint: MANT-SORRY</p>
