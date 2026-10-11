@@ -31,10 +31,6 @@
         <stop offset="0" stop-color="#0d6b57" />
         <stop offset="1" stop-color="#12407f" />
       </linearGradient>
-      <linearGradient id="gHat" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#3fe0a9" />
-        <stop offset="1" stop-color="#2a7fd4" />
-      </linearGradient>
       <linearGradient id="gStarBlue" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stop-color="#58b8f2" />
         <stop offset="1" stop-color="#1c5fb0" />
@@ -43,19 +39,15 @@
         <stop offset="0" stop-color="#7cf0c4" />
         <stop offset="1" stop-color="#14906f" />
       </linearGradient>
-      <linearGradient id="gBolt" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#c9fbe8" />
-        <stop offset="1" stop-color="#43c9a6" />
-      </linearGradient>
 
       <symbol id="heart" viewBox="0 0 24 24">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </symbol>
-      <symbol id="star" viewBox="0 0 100 100">
-        <polygon points="50,6 61,38 95,38 67,58 78,92 50,72 22,92 33,58 5,38 39,38" />
-      </symbol>
-      <symbol id="bolt" viewBox="0 0 100 100">
-        <polygon points="58,4 14,56 42,56 30,98 84,38 54,38" />
+      <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+        <path transform="scale(0.03125 0.03448)" d="M16 29C14 27.4 0 18 0 9C0 4 3.8 0 8.5 0C11.8 0 14.6 1.8 16 4.6C17.4 1.8 20.2 0 23.5 0C28.2 0 32 4 32 9C32 18 18 27.4 16 29Z" />
+      </clipPath>
+      <symbol id="sparkle" viewBox="0 0 24 24">
+        <path d="M12 0C12.9 7 17 11.1 24 12C17 12.9 12.9 17 12 24C11.1 17 7 12.9 0 12C7 11.1 11.1 7 12 0Z" />
       </symbol>
     </defs>
   </svg>
@@ -70,6 +62,7 @@
     <!-- ===================================================== -->
     <section class="screen screen--lock is-active" id="screen-lock" data-screen="lock" aria-label="Enter the passcode">
       <div class="stage lock">
+        <svg class="lock__love" style="--i:0" aria-hidden="true"><use href="#heart" fill="#fff" /></svg>
         <h1 class="lock__title" style="--i:0">Enter Code</h1>
 
         <div class="slots" id="slots" style="--i:1" aria-hidden="true">
@@ -92,9 +85,9 @@
             <button class="key" type="button" data-key="7">7</button>
             <button class="key" type="button" data-key="8">8</button>
             <button class="key" type="button" data-key="9">9</button>
-            <button class="key" type="button" data-key=".">.</button>
+            <button class="key key--remove" type="button" data-key="remove" aria-label="Remove last digit">REMOVE</button>
             <button class="key" type="button" data-key="0">0</button>
-            <button class="key key--del" type="button" data-key="del" aria-label="Delete">DEL</button>
+            <button class="key key--enter" type="button" data-key="enter" aria-label="Enter code">ENTER</button>
           </div>
 
           <!-- Shown instead of the keypad after a wrong code -->
@@ -108,7 +101,7 @@
     <!-- ===================================================== -->
     <section class="screen screen--envelope" id="screen-envelope" data-screen="envelope" aria-label="You've got mail">
       <div class="stage env">
-        <h2 class="env__greeting" style="--i:0">hey, baby eol!</h2>
+        <h2 class="env__greeting" style="--i:0">hey, baby eol! <svg class="inline-heart" aria-hidden="true"><use href="#heart" fill="url(#gHeartDeep)" /></svg></h2>
 
         <button class="envelope" id="envelope" type="button" style="--i:1" aria-label="Open the envelope">
           <span class="envelope__back"></span>
@@ -116,6 +109,9 @@
           <span class="envelope__front"></span>
           <span class="envelope__flap"></span>
           <svg class="envelope__heart"><use href="#heart" fill="url(#gHeartDeep)" /></svg>
+          <svg class="envelope__float envelope__float--1" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" /></svg>
+          <svg class="envelope__float envelope__float--2" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartDeep)" /></svg>
+          <svg class="envelope__float envelope__float--3" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" /></svg>
         </button>
 
         <p class="env__sub" style="--i:2">you've got mail ;)</p>
@@ -129,6 +125,14 @@
     <section class="screen screen--mail" id="screen-mail" data-screen="mail" aria-label="Your email">
       <div class="stage">
         <article class="mail">
+          <div class="mail__hearts" aria-hidden="true">
+            <svg class="mh mh--1" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--2" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--3" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--4" viewBox="0 0 24 24"><use href="#heart" /></svg>
+            <svg class="mh mh--5" viewBox="0 0 24 24"><use href="#sparkle" /></svg>
+            <svg class="mh mh--6" viewBox="0 0 24 24"><use href="#sparkle" /></svg>
+          </div>
           <p class="mail__row" style="--i:0"><span class="mail__label">From:</span> <span class="mail__value">daddy fin</span></p>
           <p class="mail__row" style="--i:1"><span class="mail__label">To:</span> <span class="mail__value">mommy eol</span></p>
           <p class="mail__row mail__row--msg" style="--i:2"><span class="mail__label">Message:</span></p>
@@ -147,46 +151,39 @@
 
         <div class="letter__inner">
 
-          <!-- Photo sticker. Put your picture next to this file as "photo.jpg"
+          <!-- Heart photo sticker. Put your picture next to this file as "photo.jpg"
                (or change the src below). If it is missing, the placeholder shows. -->
           <figure class="sticker reveal" style="--i:0">
-            <div class="sticker__photo">
-              <div class="sticker__ph" aria-hidden="true">
-                <svg viewBox="0 0 100 100"><circle cx="50" cy="38" r="17" /><path d="M16 94c2-20 16-31 34-31s32 11 34 31z" /></svg>
-                <span>PHOTO<br />HERE</span>
+            <div class="sticker__frame">
+              <div class="sticker__outline" style="clip-path:url(#heartClip)"></div>
+              <div class="sticker__photo" style="clip-path:url(#heartClip)">
+                <div class="sticker__ph" aria-hidden="true">
+                  <svg viewBox="0 0 100 100"><circle cx="50" cy="38" r="17" /><path d="M16 94c2-20 16-31 34-31s32 11 34 31z" /></svg>
+                  <span>PHOTO<br />HERE</span>
+                </div>
+                <img src="photo.jpg" alt="Our photo" onerror="this.style.display='none'" />
               </div>
-              <img src="photo.jpg" alt="Our photo" onerror="this.style.display='none'" />
             </div>
 
-            <!-- party hat -->
-            <svg class="deco deco--hat" viewBox="0 0 100 124" aria-hidden="true">
-              <defs><clipPath id="hatClip"><path d="M50 10 L95 116 Q50 126 5 116 Z" /></clipPath></defs>
-              <g clip-path="url(#hatClip)">
-                <rect width="100" height="124" fill="url(#gHat)" />
-                <path d="M-6 100 L106 62" stroke="#fff" stroke-width="7" opacity=".55" />
-                <path d="M-6 72 L106 34" stroke="#fff" stroke-width="7" opacity=".35" />
-                <rect y="104" width="100" height="22" fill="#fff" opacity=".9" />
-              </g>
-              <path d="M50 10 L95 116 Q50 126 5 116 Z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round" />
-              <circle cx="50" cy="10" r="9" fill="#fff" />
-              <use href="#heart" x="36" y="62" width="28" height="28" fill="#fff" />
+            <!-- ribbon bow -->
+            <svg class="deco deco--bow" viewBox="0 0 100 64" aria-hidden="true">
+              <path d="M50 32C32 2 2 6 6 32C2 58 32 62 50 32Z" fill="url(#gHeartFill)" stroke="#fff" stroke-width="4" stroke-linejoin="round" />
+              <path d="M50 32C68 2 98 6 94 32C98 58 68 62 50 32Z" fill="url(#gHeartFill)" stroke="#fff" stroke-width="4" stroke-linejoin="round" />
+              <circle cx="50" cy="32" r="10" fill="#fff" />
+              <circle cx="50" cy="32" r="5" fill="url(#gHeartDeep)" />
             </svg>
 
-            <svg class="deco deco--bolt" viewBox="0 0 100 100" aria-hidden="true"><use href="#bolt" fill="url(#gBolt)" stroke="#fff" stroke-width="6" stroke-linejoin="round" /></svg>
-            <svg class="deco deco--bolt deco--bolt2" viewBox="0 0 100 100" aria-hidden="true"><use href="#bolt" fill="url(#gBolt)" stroke="#fff" stroke-width="6" stroke-linejoin="round" /></svg>
-            <svg class="deco deco--star deco--star1" viewBox="0 0 100 100" aria-hidden="true"><use href="#star" fill="url(#gStarBlue)" stroke="#fff" stroke-width="6" stroke-linejoin="round" /></svg>
-            <svg class="deco deco--star deco--star2" viewBox="0 0 100 100" aria-hidden="true"><use href="#star" fill="url(#gStarGreen)" stroke="#fff" stroke-width="6" stroke-linejoin="round" /></svg>
-            <svg class="deco deco--star deco--star3" viewBox="0 0 100 100" aria-hidden="true"><use href="#star" fill="url(#gStarBlue)" stroke="#fff" stroke-width="6" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h1" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h2" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gStarGreen)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h3" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gStarBlue)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h4" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gHeartFill)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--heart deco--h5" viewBox="0 0 24 24" aria-hidden="true"><use href="#heart" fill="url(#gStarBlue)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" /></svg>
+            <svg class="deco deco--spark deco--s1" viewBox="0 0 24 24" aria-hidden="true"><use href="#sparkle" fill="#fff" /></svg>
+            <svg class="deco deco--spark deco--s2" viewBox="0 0 24 24" aria-hidden="true"><use href="#sparkle" fill="#fff" /></svg>
+            <svg class="deco deco--spark deco--s3" viewBox="0 0 24 24" aria-hidden="true"><use href="#sparkle" fill="#fff" /></svg>
 
-            <!-- cake -->
-            <svg class="deco deco--cake" viewBox="0 0 120 112" aria-hidden="true">
-              <ellipse cx="60" cy="98" rx="55" ry="11" fill="#fff" />
-              <ellipse cx="60" cy="96" rx="46" ry="7" fill="#bfeee0" />
-              <rect x="22" y="50" width="76" height="46" rx="9" fill="#ffe08a" stroke="#fff" stroke-width="4" />
-              <path d="M22 56 Q22 48 30 48 H90 Q98 48 98 56 V62 q-7.6 11 -15.2 0 t-15.2 0 t-15.2 0 t-15.2 0 t-15.2 0 Z" fill="#fff" />
-              <rect x="56" y="26" width="8" height="24" rx="3" fill="#3aa0e6" stroke="#fff" stroke-width="2" />
-              <path d="M60 8 C66 16 68 20 60 26 C52 20 54 16 60 8Z" fill="#ffb703" stroke="#fff" stroke-width="2" />
-            </svg>
+            <!-- ✏️ edit this little tag if you want -->
+            <figcaption class="sticker__tag">happy monthsary</figcaption>
           </figure>
 
           <!-- ============================================================
@@ -203,6 +200,12 @@
             <p class="reveal letter__sign" style="--i:5">place text here so i can manually edit it.</p>
           </div>
           <!-- ✏️  END OF EDIT AREA -->
+
+          <div class="hearts-row reveal" style="--i:6" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><use href="#heart" fill="#fff" /></svg>
+            <svg viewBox="0 0 24 24"><use href="#heart" fill="#fff" /></svg>
+            <svg viewBox="0 0 24 24"><use href="#heart" fill="#fff" /></svg>
+          </div>
 
         </div>
       </div>

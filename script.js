@@ -86,24 +86,29 @@
   function pressKey(key) {
     if (busy) return;
 
-    if (key === "del") {
+    if (key === "remove") {
       entry = entry.slice(0, -1);
       renderSlots();
+      return;
+    }
+
+    if (key === "enter") {
+      submit();
       return;
     }
 
     if (entry.length >= CONFIG.passcode.length) return;
     entry += key;
     renderSlots();
-
-    if (entry.length === CONFIG.passcode.length) {
-      busy = true;
-      // tiny pause so the 4th heart can pop before the verdict
-      setTimeout(checkEntry, 280);
-    }
   }
 
-  function checkEntry() {
+  // ENTER: nothing typed -> little nudge; otherwise check the code
+  function submit() {
+    if (!entry.length) {
+      slots.forEach((s) => { s.classList.remove("is-nudge"); void s.offsetWidth; s.classList.add("is-nudge"); });
+      return;
+    }
+    busy = true;
     if (entry === CONFIG.passcode) onCorrect();
     else onWrong();
   }
@@ -141,12 +146,17 @@
   // physical keyboard
   document.addEventListener("keydown", (e) => {
     if (current !== lock || busy) return;
-    if (/^[0-9.]$/.test(e.key)) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      pressKey("enter");
+      const btn = pad.querySelector('[data-key="enter"]');
+      btn.classList.add("is-pressed"); setTimeout(() => btn.classList.remove("is-pressed"), 130);
+    } else if (/^[0-9]$/.test(e.key)) {
       pressKey(e.key);
       const btn = pad.querySelector(`[data-key="${e.key}"]`);
       if (btn) { btn.classList.add("is-pressed"); setTimeout(() => btn.classList.remove("is-pressed"), 130); }
     } else if (e.key === "Backspace") {
-      pressKey("del");
+      pressKey("remove");
     }
   });
 
@@ -226,7 +236,7 @@
   });
 
   /* =========================================================
-     LETTER BUNTING (little flags)
+     LETTER GARLAND (little hearts)
      ========================================================= */
   (function buildBunting() {
     const wrap = $("#bunting");
@@ -235,6 +245,7 @@
       const f = document.createElement("span");
       f.className = "flag";
       f.style.setProperty("--k", i);
+      f.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#heart"/></svg>';
       wrap.appendChild(f);
     }
   })();
@@ -245,30 +256,55 @@
   const floaters = $("#floaters");
 
   function spawnFloater() {
-    if (document.hidden) return;
+    if (document.hidden || floaters.childElementCount > 46) return;
     const el = document.createElement("span");
+    const spark = Math.random() < 0.22;
     el.className = "floater";
     el.style.setProperty("--x", `${rand(0, 96).toFixed(1)}vw`);
-    el.style.setProperty("--s", `${rand(14, 34).toFixed(0)}px`);
-    el.style.setProperty("--d", `${rand(9, 16).toFixed(1)}s`);
-    el.style.setProperty("--drift", `${rand(-70, 70).toFixed(0)}px`);
-    el.style.setProperty("--o", rand(0.22, 0.5).toFixed(2));
-    el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#heart"/></svg>';
+    el.style.setProperty("--s", `${(spark ? rand(10, 20) : rand(14, 42)).toFixed(0)}px`);
+    el.style.setProperty("--d", `${rand(8, 15).toFixed(1)}s`);
+    el.style.setProperty("--drift", `${rand(-80, 80).toFixed(0)}px`);
+    el.style.setProperty("--o", rand(0.25, 0.6).toFixed(2));
+    el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${spark ? "sparkle" : "heart"}"/></svg>`;
     el.addEventListener("animationend", () => el.remove());
     floaters.appendChild(el);
   }
 
   if (!reduceMotion) {
-    for (let i = 0; i < 5; i++) setTimeout(spawnFloater, i * 350);
-    setInterval(spawnFloater, 900);
+    for (let i = 0; i < 10; i++) setTimeout(spawnFloater, i * 220);
+    setInterval(spawnFloater, 450);
   }
+
+  // tiny hearts pop wherever you tap (cute!)
+  function tapHearts(x, y) {
+    if (reduceMotion) return;
+    for (let i = 0; i < 5; i++) {
+      const el = document.createElement("span");
+      el.className = "confetti confetti--heart";
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.color = ["#ffffff", "#bff0df", "#7cf0c4", "#8fd0f5"][i % 4];
+      el.style.width = el.style.height = `${rand(10, 18)}px`;
+      el.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#heart"/></svg>';
+      document.body.appendChild(el);
+      const dx = rand(-46, 46);
+      el.animate(
+        [
+          { transform: "translate(-50%, -50%) scale(0.3)", opacity: 1 },
+          { transform: `translate(calc(-50% + ${dx}px), ${rand(-90, -50)}px) scale(1) rotate(${rand(-25, 25)}deg)`, opacity: 0 },
+        ],
+        { duration: rand(700, 1100), easing: "cubic-bezier(.2,.7,.4,1)", fill: "forwards" }
+      ).onfinish = () => el.remove();
+    }
+  }
+  document.addEventListener("pointerdown", (e) => tapHearts(e.clientX, e.clientY));
 
   function burst(x, y, count = 28) {
     if (reduceMotion) return;
     const colors = ["#ffffff", "#bff0df", "#5fdcb9", "#7cc8f5", "#2f8fd8", "#1fb38a"];
     for (let i = 0; i < count; i++) {
       const el = document.createElement("span");
-      const isHeart = Math.random() < 0.35;
+      const isHeart = Math.random() < 0.6;
       const color = colors[Math.floor(Math.random() * colors.length)];
       el.className = "confetti" + (isHeart ? " confetti--heart" : "");
       el.style.left = `${x}px`;
