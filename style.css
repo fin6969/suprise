@@ -773,6 +773,9 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 36%;
+  transform: scale(1.45);              /* zoom in so the face fills the heart */
+  transform-origin: 50% 34%;
 }
 .sticker__ph {
   position: absolute;
