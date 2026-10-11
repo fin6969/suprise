@@ -17,14 +17,14 @@
   --grad-main: linear-gradient(135deg, #0e6b52 0%, #12857a 42%, #1574ad 72%, #134f8f 100%);
   --grad-soft: linear-gradient(135deg, #1f9d7a 0%, #2b86d3 100%);
 
-  --font-title: "Rozha One", "Playfair Display", serif;
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-ui: "Poppins", system-ui, sans-serif;
-  --font-hand: "Gaegu", "Comic Sans MS", cursive;
-  --font-script: "Sue Ellen Francisco", "Gaegu", cursive;
+  --font-title: "Fredoka", system-ui, sans-serif;
+  --font-ui: "Fredoka", system-ui, sans-serif;
+  --font-hand: "Shantell Sans", "Fredoka", system-ui, sans-serif;
 
-  --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
-  --t-screen: 0.95s;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);          /* soft ease-out (default) */
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);       /* smooth in-out */
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);/* gentle overshoot */
+  --t-screen: 1.1s;
 }
 
 /* ---------- reset-ish ---------- */
@@ -61,12 +61,11 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
   opacity: 0;
   visibility: hidden;
-  transform: scale(0.93);
-  filter: blur(10px);
+  transform: scale(0.96);
+  will-change: opacity, transform;
   transition:
     opacity var(--t-screen) var(--ease),
     transform var(--t-screen) var(--ease),
-    filter var(--t-screen) var(--ease),
     visibility 0s linear var(--t-screen);
 }
 
@@ -74,15 +73,13 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   opacity: 1;
   visibility: visible;
   transform: none;
-  filter: none;
   transition:
-    opacity var(--t-screen) var(--ease) 0.25s,
-    transform var(--t-screen) var(--ease) 0.25s,
-    filter var(--t-screen) var(--ease) 0.25s,
+    opacity var(--t-screen) var(--ease) 0.2s,
+    transform var(--t-screen) var(--ease) 0.2s,
     visibility 0s linear 0s;
 }
 
-.screen.is-done { transform: scale(1.1); }
+.screen.is-done { transform: scale(1.06); }
 
 .screen--lock     { z-index: 1; }
 .screen--envelope { z-index: 2; }
@@ -103,12 +100,12 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 /* staggered entrance for anything with --i inside the active screen */
 .screen.is-active .stage > *,
 .screen.is-active .mail > * {
-  animation: rise 0.9s var(--ease) backwards;
-  animation-delay: calc(var(--i, 0) * 0.11s + 0.45s);
+  animation: rise 1.1s var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 0.1s + 0.4s);
 }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(22px) scale(0.98); }
+  from { opacity: 0; transform: translate3d(0, 24px, 0) scale(0.97); }
   to   { opacity: 1; transform: none; }
 }
 
@@ -124,18 +121,35 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
    1) LOCK SCREEN  (green + blue gingham)
    ========================================================= */
 .screen--lock {
-  /* layers (top → bottom): vignette · vertical stripes · horizontal stripes · green→blue */
-  background:
-    radial-gradient(120% 90% at 50% 45%, transparent 38%, rgba(2, 28, 30, 0.55) 100%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.13) 50%, transparent 50%),
-    linear-gradient(rgba(255, 255, 255, 0.13) 50%, transparent 50%),
-    var(--grad-main);
-  background-size: auto, 96px 96px, 96px 96px, auto;
-  animation: gingham 26s linear infinite;
+  overflow: hidden;
+  background: var(--grad-main);
 }
-@keyframes gingham {
-  from { background-position: 0 0, 0 0, 0 0, 0 0; }
-  to   { background-position: 0 0, 96px 96px, 96px 96px, 0 0; }
+/* the checker pattern drifts with a transform (cheap, buttery) */
+.screen--lock::before {
+  content: "";
+  position: absolute;
+  inset: -96px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.13) 50%, transparent 50%),
+    linear-gradient(rgba(255, 255, 255, 0.13) 50%, transparent 50%);
+  background-size: 96px 96px;
+  animation: gingham 30s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+.screen--lock::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 38%, rgba(2, 28, 30, 0.55) 100%);
+  pointer-events: none;
+}
+@keyframes gingham { to { transform: translate3d(96px, 96px, 0); } }
+
+/* very short screens: allow scrolling instead of clipping */
+@media (max-height: 560px) {
+  .screen--lock { overflow-y: auto; }
+  .screen--lock::before { inset: 0; animation: none; }
 }
 
 .lock { gap: clamp(12px, 2.4vh, 20px); }
@@ -151,59 +165,97 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .lock__title {
   margin: 0;
   font-family: var(--font-title);
-  font-weight: 400;
-  font-size: clamp(2.3rem, 9vw, 3.2rem);
-  letter-spacing: 0.02em;
+  font-weight: 700;
+  font-size: clamp(2.3rem, 9.5vw, 3.2rem);
+  letter-spacing: 0.01em;
   text-shadow: 0 3px 0 rgba(0, 40, 40, 0.35), 0 10px 26px rgba(0, 20, 30, 0.35);
 }
 
-/* ---- 4 heart slots ---- */
+/* ---- 4 heart slots: the typed digit shows inside the heart ---- */
 .slots { display: flex; gap: 10px; }
 
 .slot {
   position: relative;
-  width: clamp(48px, 14vw, 58px);
+  width: clamp(50px, 14.5vw, 60px);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
   background: #fff;
   border: 3px solid #0a3a3f;
-  border-radius: 12px;
+  border-radius: 13px;
   box-shadow: 0 6px 16px rgba(0, 20, 30, 0.35);
+  transition: border-color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .heart {
   position: absolute;
-  width: 62%;
-  height: 62%;
-  transition: transform 0.35s var(--ease), opacity 0.25s ease, filter 0.3s ease;
+  width: 78%;
+  height: 78%;
+  opacity: 0;
+  transform: scale(0.3) rotate(-20deg);
+  transition: transform 0.55s var(--ease-spring), opacity 0.3s ease;
 }
-.heart--empty { fill: #c4e8e0; }
-.heart--full  { opacity: 0; transform: scale(0.2) rotate(-25deg); }
+.heart--empty { width: 62%; height: 62%; opacity: 1; transform: none; fill: #c4e8e0; transition: opacity 0.3s ease, fill 0.4s ease; }
 
+.slot__digit {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 5.6vw, 1.7rem);
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 30, 50, 0.45);
+  opacity: 0;
+  transform: translateY(2px) scale(0.4);
+  transition: transform 0.5s var(--ease-spring), opacity 0.25s ease;
+}
+
+/* typing */
+.slot.is-filled .heart--empty { opacity: 0; }
 .slot.is-filled .heart--full {
   opacity: 1;
-  transform: scale(1) rotate(0);
-  animation: pop 0.45s var(--ease), beat-soft 1.5s ease-in-out 0.5s infinite;
+  transform: none;
+  animation: pop 0.6s var(--ease-spring) backwards, beat-soft 1.8s ease-in-out 0.6s infinite;
 }
+.slot.is-filled .slot__digit { opacity: 1; transform: translateY(2px); }
+
+/* wrong -> red */
+.screen--lock.is-wrong .slot { border-color: #c9243f; background-color: #fff0f2; }
+.screen--lock.is-wrong .heart--empty { fill: #f6c4cd; }
+.screen--lock.is-wrong .slot.is-filled .heart--full { opacity: 0; animation: none; }
+.screen--lock.is-wrong .slot.is-filled .heart--wrong {
+  opacity: 1;
+  transform: none;
+  animation: pop 0.6s var(--ease-spring) backwards;
+}
+
+/* correct -> green */
+.screen--lock.is-correct .slot { border-color: #12a35a; background-color: #effff4; }
+.screen--lock.is-correct .slot.is-filled .heart--full { opacity: 0; animation: none; }
+.screen--lock.is-correct .slot.is-filled .heart--right {
+  opacity: 1;
+  transform: none;
+  animation: pop 0.6s var(--ease-spring) backwards, beat-soft 1.4s ease-in-out 0.6s infinite;
+}
+
 @keyframes beat-soft {
   0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.12); }
+  50%      { transform: scale(1.1); }
 }
-.slot.is-filled .heart--empty { opacity: 0; }
-
 @keyframes pop {
-  0%   { transform: scale(0.2) rotate(-25deg); }
-  60%  { transform: scale(1.3) rotate(6deg); }
+  0%   { transform: scale(0.3) rotate(-20deg); }
+  60%  { transform: scale(1.22) rotate(5deg); }
   100% { transform: scale(1) rotate(0); }
 }
 
 .lock__hint {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(0.85rem, 3.2vw, 1rem);
-  letter-spacing: 0.04em;
+  font-family: var(--font-ui);
+  font-size: clamp(0.9rem, 3.4vw, 1.05rem);
+  letter-spacing: 0.08em;
   text-shadow: 0 2px 8px rgba(0, 20, 30, 0.45);
+  font-weight: 600;
 }
 
 /* ---- keypad ---- */
@@ -222,7 +274,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   box-shadow:
     0 22px 44px rgba(0, 20, 30, 0.45),
     inset 0 0 0 3px #fff;
-  transition: opacity 0.35s ease, transform 0.45s var(--ease), visibility 0s linear 0.45s;
+  transition: opacity 0.4s ease, transform 0.6s var(--ease), visibility 0s linear 0.6s;
 }
 
 .key {
@@ -234,34 +286,47 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   font-weight: 700;
   font-size: clamp(1.15rem, 4.6vw, 1.4rem);
   box-shadow: 0 4px 0 #0a3a4a, 0 8px 14px rgba(8, 40, 60, 0.28);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.2s ease;
+  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
   user-select: none;
   -webkit-user-select: none;
+  position: relative;
+}
+.key::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
 }
 .key--remove,
 .key--enter {
-  font-size: clamp(0.62rem, 2.7vw, 0.74rem);
-  letter-spacing: 0.05em;
+  font-size: clamp(0.72rem, 3vw, 0.85rem);
+  letter-spacing: 0.06em;
 }
 .key--remove { background: linear-gradient(160deg, #3b8fa6 0%, #2a6fa8 100%); }
 .key--enter  {
   background: linear-gradient(160deg, #2ed3a0 0%, #1f9bd0 100%);
   box-shadow: 0 4px 0 #0c6a78, 0 8px 14px rgba(8, 40, 60, 0.28);
-  animation: enter-glow 2.4s ease-in-out infinite;
 }
+.key--enter::after { animation: enter-glow 2.6s ease-in-out infinite; }
 @keyframes enter-glow {
-  0%, 100% { filter: brightness(1); }
-  50%      { filter: brightness(1.18); }
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 0.22; }
 }
 
 @media (hover: hover) {
-  .key:hover { filter: brightness(1.15); }
+  .key:hover { transform: translateY(-2px); }
+  .key:hover::after { opacity: 0.14; }
 }
 .key:active, .key.is-pressed {
   transform: translateY(3px) scale(0.96);
   box-shadow: 0 1px 0 #0a3a4a, 0 3px 8px rgba(8, 40, 60, 0.25);
-  filter: brightness(1.25);
+  transition-duration: 0.08s;
 }
+.key:active::after, .key.is-pressed::after { opacity: 0.22; }
 .key:focus-visible { outline: 3px solid var(--mint-300); outline-offset: 2px; }
 
 @media (max-height: 640px) {
@@ -287,7 +352,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   line-height: 1.3;
   text-align: center;
   box-shadow: 0 16px 34px rgba(0, 20, 30, 0.45);
-  transition: opacity 0.35s ease, transform 0.45s var(--ease), visibility 0s linear 0.45s;
+  transition: opacity 0.4s ease, transform 0.6s var(--ease), visibility 0s linear 0.6s;
 }
 .retry:hover { filter: brightness(0.96); }
 .retry:focus-visible { outline: 3px solid var(--mint-300); outline-offset: 3px; }
@@ -312,8 +377,6 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 .slot.is-nudge { animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
 .screen--lock.is-wrong .slots { animation: shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
-.screen--lock.is-wrong .heart--full { filter: hue-rotate(165deg) saturate(1.5); }
-.screen--lock.is-wrong .slot { border-color: #7a1630; }
 
 @keyframes shake {
   10%, 90% { transform: translateX(-2px); }
@@ -328,14 +391,14 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   transform: translateY(26px) scale(0.92);
   pointer-events: none;
 }
-.screen--lock.is-correct .slot { animation: glow 0.9s ease both; }
+.screen--lock.is-correct .slot { animation: glow 1.1s var(--ease) both; }
 .screen--lock.is-correct .slot:nth-child(2) { animation-delay: 0.08s; }
 .screen--lock.is-correct .slot:nth-child(3) { animation-delay: 0.16s; }
 .screen--lock.is-correct .slot:nth-child(4) { animation-delay: 0.24s; }
 @keyframes glow {
   0%   { transform: none; box-shadow: 0 6px 16px rgba(0, 20, 30, 0.35); }
-  40%  { transform: translateY(-10px) scale(1.12); box-shadow: 0 0 0 6px rgba(143, 232, 201, 0.55), 0 16px 26px rgba(0, 20, 30, 0.4); }
-  100% { transform: none; box-shadow: 0 6px 16px rgba(0, 20, 30, 0.35); }
+  40%  { transform: translateY(-10px) scale(1.1); box-shadow: 0 0 0 7px rgba(70, 225, 140, 0.5), 0 16px 26px rgba(0, 20, 30, 0.4); }
+  100% { transform: none; box-shadow: 0 0 0 0 rgba(70, 225, 140, 0), 0 6px 16px rgba(0, 20, 30, 0.35); }
 }
 
 /* =========================================================
@@ -354,10 +417,10 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 .env__greeting {
   margin: 0;
-  font-family: var(--font-script);
-  font-weight: 400;
-  font-size: clamp(2.6rem, 11vw, 4.2rem);
-  line-height: 1;
+  font-family: var(--font-hand);
+  font-weight: 800;
+  font-size: clamp(2.1rem, 9.2vw, 3.3rem);
+  line-height: 1.15;
   color: var(--ink);
 }
 
@@ -371,9 +434,9 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .env__sub {
   margin: 0;
   font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: clamp(1.8rem, 7.4vw, 2.6rem);
-  letter-spacing: 0.04em;
+  font-weight: 800;
+  font-size: clamp(1.4rem, 6vw, 1.95rem);
+  letter-spacing: 0.01em;
   color: var(--ink);
 }
 
@@ -384,10 +447,11 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 .env__tap {
   margin: -6px 0 0;
   font-family: var(--font-hand);
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
   color: rgba(11, 58, 70, 0.55);
   animation: fade-pulse 2.2s ease-in-out infinite;
+  font-weight: 700;
 }
 @keyframes fade-pulse { 50% { opacity: 0.35; } }
 .screen.is-active .stage > .env__tap {
@@ -433,7 +497,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   background: #fff;
   background-image: repeating-linear-gradient(transparent 0 15px, rgba(43, 134, 211, 0.16) 15px 16px);
   z-index: 2;
-  transition: transform 0.9s var(--ease) 0.45s;
+  transition: transform 1.1s var(--ease) 0.4s;
 }
 
 .envelope__front {
@@ -451,7 +515,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   background: linear-gradient(180deg, #52dcb4 0%, #36a6e6 100%);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: 50% 0;
-  transition: transform 0.8s var(--ease), z-index 0s linear 0.35s;
+  transition: transform 1s var(--ease-io), z-index 0s linear 0.45s;
   z-index: 4;
 }
 
@@ -543,28 +607,30 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 .mail__row {
   margin: 0 0 0.35em;
-  font-size: clamp(1.7rem, 6.4vw, 2.3rem);
+  font-size: clamp(1.4rem, 5.4vw, 1.9rem);
   line-height: 1.2;
+  font-weight: 700;
 }
-.mail__label { font-weight: 700; letter-spacing: 0.05em; opacity: 0.92; }
-.mail__value { font-weight: 400; letter-spacing: 0.04em; }
+.mail__label { font-weight: 800; letter-spacing: 0.02em; opacity: 0.92; }
+.mail__value { font-weight: 700; letter-spacing: 0.01em; }
 
 .mail__row--msg { margin-top: 0.9em; }
 
 .mail__msg {
+  text-wrap: balance;
   margin: 0 0 1.7em;
   font-weight: 700;
-  font-size: clamp(1.5rem, 5.6vw, 2rem);
-  line-height: 1.3;
-  letter-spacing: 0.04em;
+  font-size: clamp(1.2rem, 4.7vw, 1.65rem);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .mail__attach {
   position: relative;
   font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: clamp(1.4rem, 5.2vw, 1.8rem);
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: clamp(1.15rem, 4.5vw, 1.45rem);
+  letter-spacing: 0.02em;
   color: #fff;
   padding: 6px 14px;
   text-decoration: underline;
@@ -596,16 +662,12 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   background-size: 160% 160%;
   animation: drift 18s ease-in-out infinite alternate;
   clip-path: circle(0% at var(--cx, 50%) var(--cy, 50%));
-  transition: clip-path 1.4s var(--ease), visibility 0s linear 1.4s;
+  transition: clip-path 1.6s var(--ease-io), visibility 0s linear 1.6s;
 }
 .screen--letter.is-active {
   visibility: visible;
   clip-path: circle(150% at var(--cx, 50%) var(--cy, 50%));
-  transition: clip-path 1.4s var(--ease), visibility 0s linear 0s;
-}
-@keyframes drift {
-  from { background-position: 0% 0%; }
-  to   { background-position: 100% 100%; }
+  transition: clip-path 1.6s var(--ease-io), visibility 0s linear 0s;
 }
 
 .letter {
@@ -653,12 +715,11 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   flex-direction: column;
   align-items: center;
   transform-origin: 50% 0;
-  animation: swing 3.2s ease-in-out infinite;
+  animation: swing 3.6s ease-in-out infinite;
   animation-delay: calc(var(--k, 0) * -0.3s);
-  filter: drop-shadow(0 4px 4px rgba(0, 30, 50, 0.22));
 }
 .flag::before { content: ""; width: 2px; height: 12px; background: rgba(255, 255, 255, 0.8); }
-.flag svg { width: 100%; height: auto; fill: currentColor; animation: beat-soft 2.2s ease-in-out infinite; animation-delay: calc(var(--k, 0) * -0.17s); }
+.flag svg { width: 100%; height: auto; fill: currentColor; }
 .flag:nth-child(4n+1) { color: #bff0df; }
 .flag:nth-child(4n+2) { color: #2fbfa6; }
 .flag:nth-child(4n+3) { color: #ffffff; }
@@ -722,7 +783,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   padding-top: 8%;
   color: rgba(255, 255, 255, 0.88);
   font-family: var(--font-ui);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.74rem;
   letter-spacing: 0.22em;
   line-height: 1.5;
@@ -738,9 +799,9 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   background: #fff;
   color: var(--green-700);
   font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: 1.35rem;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
   box-shadow: 0 10px 18px rgba(0, 28, 50, 0.3);
   transform: rotate(2deg);
   animation: tag-wiggle 3.4s ease-in-out infinite;
@@ -781,20 +842,21 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   max-width: 34rem;
 }
 .letter__text p {
+  text-wrap: balance;
   margin: 0 0 1.35em;
   font-family: var(--font-hand);
-  font-weight: 400;
-  font-size: clamp(1.3rem, 4.8vw, 1.7rem);
-  line-height: 1.42;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 4.1vw, 1.35rem);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
   color: #fff;
   text-shadow: 0 2px 10px rgba(0, 30, 50, 0.3);
 }
 .letter__greeting {
-  font-weight: 700 !important;
-  font-size: clamp(1.6rem, 6vw, 2.1rem) !important;
+  font-weight: 800 !important;
+  font-size: clamp(1.35rem, 5.3vw, 1.85rem) !important;
 }
-.letter__sign { margin-bottom: 0 !important; font-weight: 700 !important; }
+.letter__sign { margin-bottom: 0 !important; font-weight: 800 !important; }
 
 .hearts-row {
   display: flex;
@@ -833,6 +895,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   height: var(--s);
   opacity: 0;
   color: #fff;
+  will-change: transform, opacity;
   animation: floatup var(--d) linear forwards;
 }
 .floater svg { width: 100%; height: 100%; fill: currentColor; }
