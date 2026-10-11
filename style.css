@@ -207,7 +207,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 30, 50, 0.45);
   opacity: 0;
-  transform: translateY(2px) scale(0.4);
+  transform: translateY(1px) scale(0.4);
   transition: transform 0.5s var(--ease-spring), opacity 0.25s ease;
 }
 
@@ -218,7 +218,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   transform: none;
   animation: pop 0.6s var(--ease-spring) backwards, beat-soft 1.8s ease-in-out 0.6s infinite;
 }
-.slot.is-filled .slot__digit { opacity: 1; transform: translateY(2px); }
+.slot.is-filled .slot__digit { opacity: 1; transform: translateY(1px); }
 
 /* wrong -> red */
 .screen--lock.is-wrong .slot { border-color: #c9243f; background-color: #fff0f2; }
@@ -290,6 +290,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
   user-select: none;
   -webkit-user-select: none;
   position: relative;
+  padding: 0 0 2px;            /* Fredoka numerals sit ~1px low; this lifts them to true centre */
 }
 .key::after {
   content: "";
@@ -303,6 +304,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 }
 .key--remove,
 .key--enter {
+  padding: 0 0 0.5px 0.06em;   /* caps are already centred; left pad cancels the trailing letter-spacing */
   font-size: clamp(0.72rem, 3vw, 0.85rem);
   letter-spacing: 0.06em;
 }
@@ -461,7 +463,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 
 /* ---- the envelope itself ---- */
 .envelope {
-  --w: clamp(240px, 66vw, 340px);
+  --w: clamp(170px, min(66vw, 62vh), 340px);   /* never taller than the screen */
   position: relative;
   width: var(--w);
   height: calc(var(--w) * 0.66);
@@ -561,7 +563,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
    ========================================================= */
 .mail {
   position: relative;
-  width: min(90vw, 620px);
+  width: min(calc(100vw - 40px), 620px);
   padding: clamp(26px, 6vw, 46px) clamp(24px, 6vw, 48px) clamp(26px, 5vw, 38px);
   border-radius: 30px;
   background: var(--grad-main);
@@ -957,4 +959,64 @@ body[data-screen="mail"] .floater { color: #3cc3a0; }
     transition-delay: 0s !important;
   }
   .floaters { display: none; }
+}
+
+/* =========================================================
+   Optical centring: letter-spacing adds a trailing gap after the
+   last letter, which pulls centred text slightly left. An equal
+   left padding cancels it so every line is truly centred.
+   ========================================================= */
+.lock__title    { padding-left: 0.01em; }
+.lock__hint     { padding-left: 0.08em; }
+.retry          { padding-left: calc(28px + 0.04em); }
+.env__sub       { padding-left: 0.01em; }
+.env__tap       { padding-left: 0.06em; }
+.mail__row,
+.mail__msg      { padding-left: 0.01em; }
+.mail__attach   { padding-left: calc(14px + 0.02em); }
+.sticker__tag   { padding-left: calc(20px + 0.03em); }
+.sticker__ph span { padding-left: 0.22em; }
+.letter__text p { padding-left: 0.01em; }
+
+/* =========================================================
+   Phone held sideways (short + wide): two-column lock screen
+   and tighter cards so nothing needs scrolling
+   ========================================================= */
+@media (max-height: 520px) and (min-aspect-ratio: 4/3) {
+  .lock {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "love  pad"
+      "title pad"
+      "slots pad"
+      "hint  pad";
+    grid-template-rows: auto auto auto auto;
+    align-content: center;
+    column-gap: clamp(32px, 8vw, 72px);
+    row-gap: 10px;
+    justify-items: center;
+    align-items: center;
+  }
+  .lock__love  { grid-area: love;  margin-bottom: -4px; }
+  .lock__title { grid-area: title; font-size: 2.2rem; }
+  .slots       { grid-area: slots; }
+  .lock__hint  { grid-area: hint; }
+  .pad-wrap    { grid-area: pad; }
+  .slot        { width: 48px; }
+  .pad         { width: 232px; gap: 7px; padding: 10px; border-radius: 26px; }
+  .key         { height: 38px; border-radius: 11px; font-size: 1.05rem; }
+  .key--remove,
+  .key--enter  { font-size: 0.66rem; }
+
+  .env { gap: 14px; }
+  .env__greeting { font-size: clamp(1.7rem, 7vh, 2.4rem); }
+  .env__sub      { font-size: clamp(1.15rem, 5vh, 1.5rem); }
+  .env__tap      { margin-top: -4px; font-size: 0.9rem; }
+
+  .mail { padding: 18px 30px 16px; border-radius: 24px; }
+  .mail__row     { font-size: 1.2rem; margin-bottom: 0.2em; }
+  .mail__row--msg { margin-top: 0.5em; }
+  .mail__msg     { font-size: 1.1rem; margin-bottom: 0.8em; }
+  .mail__attach  { font-size: 1.1rem; }
 }
